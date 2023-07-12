@@ -1,0 +1,54 @@
+.bgBackground {
+  background: url("/imgs/background.png") black 50% 20% / cover no-repeat;
+}
+
+.headedrText {
+  color: #fff;
+  font-family: Manrope;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 125px;
+  letter-spacing: 0.48px;
+}
+
+.purpleCloud {
+  border-radius: 100px;
+  background: rgba(240, 135, 255, 0.4);
+  filter: blur(250px);
+}
+
+.greenCircle {
+  border-radius: 1000px;
+  background: linear-gradient(180deg, rgba(95, 95, 95, 0) 0%, #72ff91 100%);
+  box-shadow: 0px 58px 80px 0px rgba(0, 0, 0, 0.16);
+}
+
+.purpleCircle {
+  border-radius: 1000px;
+  background: linear-gradient(180deg, #694091 0%, rgba(25, 22, 28, 0) 100%);
+  box-shadow: 0px 58px 80px 0px rgba(0, 0, 0, 0.16);
+}
+
+.orangeCircle {
+  border-radius: 1000px;
+  background: linear-gradient(180deg, #7c3400 0%, rgba(164, 69, 0, 0) 100%);
+  box-shadow: 0px 58px 80px 0px rgba(0, 0, 0, 0.16);
+}
+
+.textGradient {
+  background: linear-gradient(to bottom, #f4a100, #c400e4);
+  -webkit-background-clip: text; /* For Safari */
+  -webkit-text-fill-color: transparent; /* For Safari */
+  background-clip: text;
+  color: transparent;
+}
+
+.blueGradientBg {
+  background: linear-gradient(
+    180deg,
+    rgba(41, 1, 91, 0.71) 0%,
+    rgba(15, 109, 103, 0.23) 100%,
+    #000 100%
+  );
+}
+
