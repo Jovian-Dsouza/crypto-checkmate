@@ -12,6 +12,7 @@ export function ChessBoard({ gameId }) {
   const [rightClickedSquares, setRightClickedSquares] = useState({});
   const [moveSquares, setMoveSquares] = useState({});
   const [optionSquares, setOptionSquares] = useState({});
+  const [myColor, setMyColor] = useState('white');
 
   /////////////////////////Multiplayer///////////////////////////////////////////////
   function onMoveReceived(message) {
@@ -34,6 +35,8 @@ export function ChessBoard({ gameId }) {
         return;
       }
       console.log('Replaying moves', result.items.length);
+
+      //Load game from history
       updateGame((game) => {
         for (let i = 0; i < result.items.length; i++) {
           console.log('from history', result.items[i].data);
@@ -46,6 +49,15 @@ export function ChessBoard({ gameId }) {
           });
         }
       });
+
+      //Cal my Color from history
+      // console.log('My client id', ably.options.clientId);
+      // console.log('first move client Id', result.items[0].clientId);
+      if (result.items[0].clientId === ably.options.clientId) {
+        setMyColor('white');
+      } else {
+        setMyColor('black');
+      }
     });
   }
 
@@ -92,6 +104,11 @@ export function ChessBoard({ gameId }) {
 
   function onSquareClick(square) {
     setRightClickedSquares({});
+
+    //Check if my turn
+    if (game.turn() !== myColor[0]) {
+      return;
+    }
 
     // from square
     if (!moveFrom) {
@@ -210,6 +227,7 @@ export function ChessBoard({ gameId }) {
         }}
         customDarkSquareStyle={{ backgroundColor: '#779952' }}
         customLightSquareStyle={{ backgroundColor: '#edeed1' }}
+        boardOrientation={myColor}
       />
     </div>
   );
