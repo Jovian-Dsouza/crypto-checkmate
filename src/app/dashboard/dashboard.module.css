@@ -1,0 +1,9 @@
+/* bg-gradient-to-r from-lightsteelblue via-transparent to-transparent */
+
+.menuGradient {
+    background:linear-gradient(90deg, #A9A7D9 65%, rgba(255, 255, 255, 0.00) 100%);
+}
+
+.menuGradient:hover {
+    background: linear-gradient(90deg, #C5D93A 65%, rgba(255, 255, 255, 0.00) 100%);
+}
