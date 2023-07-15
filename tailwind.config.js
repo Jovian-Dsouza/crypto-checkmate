@@ -8,7 +8,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        orange: '#fca311',
+        'orange-custom': '#fca311',
         lightgreen: '#7ad05b',
         violet: 'rgba(240, 135, 255, 0.3)',
         gray: {
@@ -32,11 +32,16 @@ module.exports = {
         darkslategray: '#3b3b3b',
       },
       fontFamily: {
-        manrope: 'Manrope',
-        'space-grotesk': "'Space Grotesk'",
+        manrope: ['var(--font-manrope)'],
+        'space-grotesk': ['var(--font-space-grotesk)'],
+      },
+      backgroundImage: {
+        bg_image: "url('/imgs/background.jpeg')",
+      },
+      backgroundPosition: {
+        'center-8': 'center -8rem'
       },
     },
-
   },
   corePlugins: {
     preflight: false,
