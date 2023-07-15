@@ -1,7 +1,6 @@
 import '@/styles/global.css';
 import { Manrope, Space_Grotesk } from 'next/font/google';
 
-
 export const metadata = {
   title: 'CryptoKnights',
   description: 'Decentrailized Web3 chess game on Flow network',
@@ -14,14 +13,12 @@ const manrope = Manrope({
 });
 
 const space_grotesk = Space_Grotesk({
-  weight: ['500'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-space-grotesk',
   subsets: ['latin'],
 });
 
 export default function RootLayout({ children }) {
-  
-
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <body className={`${manrope.className} ${space_grotesk.className}`}>{children}</body>

@@ -35,11 +35,17 @@ module.exports = {
         manrope: ['var(--font-manrope)'],
         'space-grotesk': ['var(--font-space-grotesk)'],
       },
+      fontWeight: {
+        400: '400',
+        500: '500',
+        600: '600',
+        700: '700',
+      },
       backgroundImage: {
         bg_image: "url('/imgs/background.jpeg')",
       },
       backgroundPosition: {
-        'center-8': 'center -8rem'
+        'center-8': 'center -8rem',
       },
     },
   },

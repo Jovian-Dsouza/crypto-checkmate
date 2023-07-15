@@ -1,9 +1,23 @@
-/* bg-gradient-to-r from-lightsteelblue via-transparent to-transparent */
-
 .menuGradient {
-    background:linear-gradient(90deg, #A9A7D9 65%, rgba(255, 255, 255, 0.00) 100%);
+  background: linear-gradient(90deg, #a9a7d9 65%, rgba(255, 255, 255, 0) 100%);
 }
 
-.menuGradient:hover {
-    background: linear-gradient(90deg, #C5D93A 65%, rgba(255, 255, 255, 0.00) 100%);
+.menuGradient:hover,
+.menuGradientSelected {
+  background: linear-gradient(90deg, #c5d93a 65%, rgba(255, 255, 255, 0) 100%);
+}
+
+.card1Bg {
+  background: linear-gradient(135deg, #c5d93a 0%, rgba(174, 255, 23, 0.21) 100%);
+  box-shadow: 0px 0px 0px 1px rgba(229, 229, 254, 0.09) inset, 0px 0px 0px 0px #fff inset;
+}
+
+.card2Bg {
+  background: linear-gradient(135deg, #02733F 10%, #AEFF17 100%);
+box-shadow: 0px 0px 0px 1px rgba(229, 229, 254, 0.09) inset, 0px 0px 0px 0px #FFF inset;
+}
+
+.card3Bg {
+  background: linear-gradient(135deg, rgba(183, 255, 50, 0) 0%, rgba(174, 255, 23, 0.21) 100%);
+  box-shadow: 0px 0px 0px 1px rgba(229, 229, 254, 0.09) inset, 0px 0px 0px 0px #fff inset;
 }
