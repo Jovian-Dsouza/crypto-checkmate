@@ -7,7 +7,7 @@ export default function HomePage() {
 
   function handleLogin() {
     console.log("Login in")
-    router.push('/dashboard');
+    router.push('/dashboard/home');
   }
 
   return (
