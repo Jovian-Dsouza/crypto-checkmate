@@ -9,7 +9,7 @@ export default function Sidebar({ children }) {
   const segment = `/dashboard/${layoutSegment}`;
 
   return (
-    <div className="flex h-full w-full text-white">
+    <div className="flex h-full w-full text-white overflow-y-hidden">
       {/* Side Nav bar */}
       <div className="hidden flex-col md:flex md:min-w-[15%] justify-between py-16 px-8 border-solid border-0 border-r-2 border-white">
         {/* Menu List */}
@@ -29,7 +29,7 @@ export default function Sidebar({ children }) {
         </div>
 
         {/* Wallet */}
-        <div className="flex flex-col px-3 rounded-lg bg-lavender-300 border border-gray-500 border-solid shadow-lg shadow-gray-600">
+        <div className="flex flex-col px-3 rounded-lg bg-lavender-300 border border-gray-500 border-solid shadow-lg shadow-gray-600 mt-5">
           {/* Upper part */}
           <div className="flex py-1.5 justify-between items-center border-0 border-b border-gray-600 border-solid">
             {/* profile logo and address */}

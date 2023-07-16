@@ -7,6 +7,13 @@ module.exports = {
   ],
   theme: {
     extend: {
+      screens: {
+        sm: '480px',
+        md: '768px',
+        lg: '1020px',
+        xl: '1440px',
+        tall: { raw: '(min-height: 800px)' },
+      },
       colors: {
         'orange-custom': '#fca311',
         lightgreen: '#7ad05b',
@@ -43,6 +50,7 @@ module.exports = {
       },
       backgroundImage: {
         bg_image: "url('/imgs/background.jpeg')",
+        'chessboard-bg': "url('/imgs/chessboardBackground.jpg')",
       },
       backgroundPosition: {
         'center-8': 'center -8rem',
