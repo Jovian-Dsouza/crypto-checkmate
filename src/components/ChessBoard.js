@@ -2,6 +2,8 @@ import { Chessboard, Square } from 'react-chessboard';
 import { Chess } from 'chess.js';
 import { useEffect, useState } from 'react';
 import { useChannel } from '@/components/AblyHook';
+import { GameModal } from '@/components/GameModal';
+
 
 export function ChessBoard({ gameId, className }) {
   const [gameChannel, chatChannel, ably] = useChannel(gameId, onMoveReceived);
@@ -13,6 +15,9 @@ export function ChessBoard({ gameId, className }) {
   const [moveSquares, setMoveSquares] = useState({});
   const [optionSquares, setOptionSquares] = useState({});
   const [myColor, setMyColor] = useState('white');
+  const [showWaiting, setShowWaiting] = useState(false);
+  const [showWinner, setShowWinner] = useState(false);
+  const [winner, setWinner] = useState('')
 
   /////////////////////////Multiplayer///////////////////////////////////////////////
   function onMoveReceived(message) {
@@ -206,7 +211,21 @@ export function ChessBoard({ gameId, className }) {
 
   return (
     <div className={className}>
-      <div className="flex flex-col w-full gap-5">
+      <div className="flex flex-col w-full justify-center items-center gap-5">
+        <GameModal
+          show={showWaiting}
+          heading="Waiting..."
+          status="Waiting for Opponent"
+          btnText="Cancel match"
+        ></GameModal>
+        <GameModal
+          show={showWinner}
+          heading="Times Up"
+          status={`🏆🎉 ${winner} Wins 🎉🏆`}
+          btnText="Congrats  🎉"
+          btnStyle={`bg-[#FFAE02] hover:bg-[#b9820d] `}
+        ></GameModal>
+
         <PlayerClock player="Player 1" address="0x23232..." time="09:34:07" />
         <Chessboard
           id="ChessBoard"

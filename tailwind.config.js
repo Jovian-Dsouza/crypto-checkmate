@@ -41,6 +41,7 @@ module.exports = {
       },
       fontFamily: {
         manrope: ['var(--font-manrope)'],
+        poppins: ['var(--font-poppins)'],
         'space-grotesk': ['var(--font-space-grotesk)'],
       },
       fontWeight: {
