@@ -9,9 +9,9 @@ export default function Dashboard() {
       <div className="text-3xl font-500">User Dashboard</div>
       {/* Game type */}
 
-      <div className="flex flex-col space-y-5">
+      <div className="flex flex-col space-y-5 z-10 bg-gray-200">
         <div className="text-xl font-300">Start your game ...</div>
-        <div className="div flex w-full justify-between space-x-5">
+        <div className="div flex flex-col md:flex-row w-full md:justify-between gap-5">
           {/* Card1 */}
           <GameCard className={styles.card1Bg} btnName="Play Now" cardTitle="Standard Match">
             <div className="text-center text-xs text-ghostwhite max-w-[15rem]">
@@ -58,8 +58,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className='absolute bottom-0 right-0'>
-        <img src="/imgs/spiral.png" className="w-80 px-10 p-5" />
+      <div className='absolute bottom-0 right-0 hidden xl:block'>
+        <img src="/imgs/spiral.png" className="w-80 " />
       </div>
     </div>
   );

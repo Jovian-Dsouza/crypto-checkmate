@@ -7,6 +7,13 @@ module.exports = {
   ],
   theme: {
     extend: {
+      screens: {
+        sm: '480px',
+        md: '768px',
+        lg: '1020px',
+        xl: '1440px',
+        tall: { raw: '(min-height: 800px)' },
+      },
       colors: {
         'orange-custom': '#fca311',
         lightgreen: '#7ad05b',

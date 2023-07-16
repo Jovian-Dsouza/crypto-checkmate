@@ -20,8 +20,10 @@ const space_grotesk = Space_Grotesk({
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning={true}>
-      <body className={`${manrope.className} ${space_grotesk.className}`}>{children}</body>
+    <html lang="en">
+      <body className={`${manrope.className} ${space_grotesk.className}`} suppressHydrationWarning={true}>
+        {children}
+      </body>
     </html>
   );
 }
