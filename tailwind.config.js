@@ -37,6 +37,7 @@ module.exports = {
         lightsteelblue: '#a9a7d9',
         seagreen: '#02733f',
         darkslategray: '#3b3b3b',
+        yellowGreen: '#ABD93A',
       },
       fontFamily: {
         manrope: ['var(--font-manrope)'],

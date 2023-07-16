@@ -3,7 +3,7 @@ import { Chess } from 'chess.js';
 import { useEffect, useState } from 'react';
 import { useChannel } from '@/components/AblyHook';
 
-export function ChessBoard({ gameId }) {
+export function ChessBoard({ gameId, className }) {
   const [gameChannel, chatChannel, ably] = useChannel(gameId, onMoveReceived);
   const [game, setGame] = useState(new Chess());
   const [moveFrom, setMoveFrom] = useState('');
@@ -205,30 +205,58 @@ export function ChessBoard({ gameId }) {
   }
 
   return (
-    <div className="w-11/12 md:w-5/12">
-      <Chessboard
-        id="ChessBoard"
-        animationDuration={200}
-        arePiecesDraggable={false}
-        position={game.fen()}
-        onSquareClick={onSquareClick}
-        onSquareRightClick={onSquareRightClick}
-        onPromotionPieceSelect={onPromotionPieceSelect}
-        customSquareStyles={{
-          ...moveSquares,
-          ...optionSquares,
-          ...rightClickedSquares,
-        }}
-        promotionToSquare={moveTo}
-        showPromotionDialog={showPromotionDialog}
-        customBoardStyle={{
-          borderRadius: '4px',
-          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
-        }}
-        customDarkSquareStyle={{ backgroundColor: '#779952' }}
-        customLightSquareStyle={{ backgroundColor: '#edeed1' }}
-        boardOrientation={myColor}
-      />
+    <div className={className}>
+      <div className="flex flex-col w-full gap-5">
+        <PlayerClock player="Player 1" address="0x23232..." time="09:34:07" />
+        <Chessboard
+          id="ChessBoard"
+          animationDuration={200}
+          arePiecesDraggable={false}
+          position={game.fen()}
+          onSquareClick={onSquareClick}
+          onSquareRightClick={onSquareRightClick}
+          onPromotionPieceSelect={onPromotionPieceSelect}
+          customSquareStyles={{
+            ...moveSquares,
+            ...optionSquares,
+            ...rightClickedSquares,
+          }}
+          promotionToSquare={moveTo}
+          showPromotionDialog={showPromotionDialog}
+          customBoardStyle={{
+            borderRadius: '4px',
+            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
+          }}
+          customDarkSquareStyle={{ backgroundColor: '#B58863' }}
+          customLightSquareStyle={{ backgroundColor: '#F0D9B5' }}
+          boardOrientation={myColor}
+        />
+        <PlayerClock player="Player 2" address="0x23232..." time="09:34:07" />
+      </div>
+    </div>
+  );
+}
+
+function PlayerClock({player, address, time}){
+  let min = "00"
+  let sec = "00"
+  let subsec = "00"
+  if(time != null){
+     const time_split = time.split(':');
+     min = time_split[0];
+     sec = time_split[1];
+     subsec = time_split[2];
+  }
+  
+  return (
+    <div className="flex w-full justify-between items-center">
+      <div className="text-lg text-slate-300">
+        {player}: <span className="text-[1rem]">{address}</span>
+      </div>
+      <div className="px-2 py-0.5 rounded-lg bg-lavender-100 text-ghostwhite text-xl font-400">
+        {`${min}:${sec}:`}
+        <span className="text-[1.1rem]">{subsec}</span>
+      </div>
     </div>
   );
 }
