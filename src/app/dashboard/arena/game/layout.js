@@ -1,4 +1,4 @@
-import GamePanel from '@/app/dashboard/arena/GamePanel';
+import GamePanel from './GamePanel';
 
 export default function ArenaLayout({ children }) {
   return (
