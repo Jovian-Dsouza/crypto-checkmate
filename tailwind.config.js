@@ -50,6 +50,7 @@ module.exports = {
       },
       backgroundImage: {
         bg_image: "url('/imgs/background.jpeg')",
+        'chessboard-bg': "url('/imgs/chessboardBackground.jpg')",
       },
       backgroundPosition: {
         'center-8': 'center -8rem',
