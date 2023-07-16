@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 import { useChannel } from '@/components/AblyHook';
 import { GameModal } from '@/components/GameModal';
 
-
 export function ChessBoard({ gameId, className }) {
+  const DURATION = 600; //10mins Game time
+
   const [gameChannel, chatChannel, ably] = useChannel(gameId, onMoveReceived);
   const [game, setGame] = useState(new Chess());
   const [moveFrom, setMoveFrom] = useState('');
@@ -16,17 +17,27 @@ export function ChessBoard({ gameId, className }) {
   const [optionSquares, setOptionSquares] = useState({});
   const [myColor, setMyColor] = useState('white');
   const [showWaiting, setShowWaiting] = useState(false);
-  const [showWinner, setShowWinner] = useState(false);
-  const [winner, setWinner] = useState('')
+  const [isGameOver, setIsGameOver] = useState(false);
+  const [winner, setWinner] = useState('');
+  //timer
+  const [player1Time, setPlayer1Time] = useState(DURATION);
+  const [player2Time, setPlayer2Time] = useState(DURATION);
+  const [activePlayer, setActivePlayer] = useState('white');
 
   /////////////////////////Multiplayer///////////////////////////////////////////////
   function onMoveReceived(message) {
-    // console.log(message);
-    const { clientId, data: move, timestamp } = message;
-    console.log('Move received', move);
-    updateGame((newGame) => {
-      newGame.move(move);
-    });
+    // Handle the special move indicating the end of the game
+    if (message.type === 'game_over') {
+      setIsGameOver(true);
+      setWinner(message.winner);
+    } else {
+      // Regular move received
+      const { clientId, data: move, timestamp } = message;
+      console.log('Move received', move);
+      updateGame((newGame) => {
+        newGame.move(move);
+      });
+    }
   }
 
   function sendMove(message) {
@@ -41,9 +52,42 @@ export function ChessBoard({ gameId, className }) {
       }
       console.log('Replaying moves', result.items.length);
 
+      // Calculate initial times based on history
+      let player1Time = DURATION;
+      let player2Time = DURATION;
+      let currentPlayer = 'white';
+      for (const item of result.items) {
+        const { clientId, data: move, timestamp } = item;
+
+        // Calculate time spent for each move
+        const timeSpent = Math.floor((timestamp - result.items[0].timestamp) / 1000);
+
+        // Subtract time spent from the corresponding player's initial time
+        if (currentPlayer === 'white') {
+          player1Time -= timeSpent;
+        } else {
+          player2Time -= timeSpent;
+        }
+
+        // Switch the current player for the next move
+        currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+      }
+
+      setPlayer1Time(player1Time);
+      setPlayer2Time(player2Time);
+
+      // Check for the last occurrence of 'game_over' move
+      let lastGameOverIndex = -1;
+      for (let i = result.items.length - 1; i >= 0; i--) {
+        if (result.items[i].data.type === 'game_over') {
+          lastGameOverIndex = i;
+          break;
+        }
+      }
+
       //Load game from history
       updateGame((game) => {
-        for (let i = 0; i < result.items.length; i++) {
+        for (let i = lastGameOverIndex+1; i < result.items.length; i++) {
           console.log('from history', result.items[i].data);
           const { from, to, promotion } = result.items[i].data;
 
@@ -167,6 +211,9 @@ export function ChessBoard({ gameId, className }) {
         return;
       }
 
+      // Switch the active player when a move is made
+      setActivePlayer((prevActivePlayer) => (prevActivePlayer === 'white' ? 'black' : 'white'));
+
       setGame(gameCopy);
       sendMove(moveCommand);
 
@@ -189,6 +236,8 @@ export function ChessBoard({ gameId, className }) {
         newGame.move(moveCommand);
       });
       sendMove(moveCommand);
+      // Switch the active player when a move is made
+      setActivePlayer((prevActivePlayer) => (prevActivePlayer === 'white' ? 'black' : 'white'));
     }
 
     setMoveFrom('');
@@ -209,6 +258,69 @@ export function ChessBoard({ gameId, className }) {
     });
   }
 
+  /////////////////////////////Timer/////////////////////////
+  // Timer Use effect
+  useEffect(() => {
+    let timer;
+    if (activePlayer === 'white') {
+      timer = setInterval(() => {
+        setPlayer1Time((prevTime) => {
+          if (prevTime === 0) {
+            setIsGameOver(true);
+            setWinner('black');
+            clearInterval(timer);
+
+            // Notify both players about the end of the game
+            const message = {
+              type: 'game_over',
+              winner: 'black',
+            };
+            sendMove(message);
+            return 0;
+          }
+          return prevTime - 1;
+        });
+      }, 1000);
+    } else if (activePlayer === 'black') {
+      timer = setInterval(() => {
+        setPlayer2Time((prevTime) => {
+          if (prevTime === 0) {
+            setIsGameOver(true);
+            setWinner('white');
+            clearInterval(timer);
+
+            // Notify both players about the end of the game
+            const message = {
+              type: 'game_over',
+              winner: 'white',
+            };
+            sendMove(message);
+            return 0;
+          }
+          return prevTime - 1;
+        });
+      }, 1000);
+    }
+
+    // Check if the game is over due to checkmate or stalemate
+    if (game.in_checkmate() || game.in_stalemate()) {
+      setIsGameOver(true);
+      let winnerTmp = '';
+      if (game.in_checkmate()) {
+        winnerTmp = game.turn() === 'w' ? 'black' : 'white';
+        setWinner(winnerTmp);
+      }
+      clearInterval(timer);
+      sendMove({
+        type: 'game_over',
+        winner: winnerTmp, // 'white', 'black', or null
+      });
+      return;
+    }
+
+    return () => clearInterval(timer);
+  }, [activePlayer]);
+
   return (
     <div className={className}>
       <div className="flex flex-col w-full justify-center items-center gap-5">
@@ -219,14 +331,20 @@ export function ChessBoard({ gameId, className }) {
           btnText="Cancel match"
         ></GameModal>
         <GameModal
-          show={showWinner}
-          heading="Times Up"
-          status={`🏆🎉 ${winner} Wins 🎉🏆`}
-          btnText="Congrats  🎉"
+          show={isGameOver}
+          heading="Game Over"
+          status={
+            winner === 'white' ? '🏆🎉 White Wins 🎉🏆' : winner === 'black' ? '🏆🎉 Black Wins 🎉🏆' : 'Stalemate'
+          }
+          btnText="Play Again"
           btnStyle={`bg-[#FFAE02] hover:bg-[#b9820d] `}
-        ></GameModal>
+        />
 
-        <PlayerClock player="Player 1" address="0x23232..." time="09:34:07" />
+        <PlayerClock
+          player="Opponent"
+          address="0x23232..."
+          totalSeconds={myColor === 'white' ? player2Time : player1Time}
+        />
         <Chessboard
           id="ChessBoard"
           animationDuration={200}
@@ -250,31 +368,27 @@ export function ChessBoard({ gameId, className }) {
           customLightSquareStyle={{ backgroundColor: '#F0D9B5' }}
           boardOrientation={myColor}
         />
-        <PlayerClock player="Player 2" address="0x23232..." time="09:34:07" />
+        <PlayerClock player="Me" address="0x23232..." totalSeconds={myColor === 'white' ? player1Time : player2Time} />
       </div>
     </div>
   );
 }
 
-function PlayerClock({player, address, time}){
-  let min = "00"
-  let sec = "00"
-  let subsec = "00"
-  if(time != null){
-     const time_split = time.split(':');
-     min = time_split[0];
-     sec = time_split[1];
-     subsec = time_split[2];
-  }
-  
+function PlayerClock({ player, address, totalSeconds }) {
+  const padZero = (num) => (num < 10 ? '0' + num : num);
+
+  const HH = padZero(Math.floor(totalSeconds / 3600));
+  const MM = padZero(Math.floor((totalSeconds % 3600) / 60));
+  const SS = padZero(totalSeconds % 60);
+
   return (
     <div className="flex w-full justify-between items-center">
       <div className="text-lg text-slate-300">
         {player}: <span className="text-[1rem]">{address}</span>
       </div>
-      <div className="px-2 py-0.5 rounded-lg bg-lavender-100 text-ghostwhite text-xl font-400">
-        {`${min}:${sec}:`}
-        <span className="text-[1.1rem]">{subsec}</span>
+      <div className="w-24 text-center px-2 py-0.5 rounded-lg bg-lavender-100 text-ghostwhite text-xl font-400">
+        {`${HH}:${MM}:`}
+        <span className="text-[1.1rem]">{SS}</span>
       </div>
     </div>
   );
