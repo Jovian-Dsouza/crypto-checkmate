@@ -1,14 +1,19 @@
-"use client";
+'use client';
+import { AppContext } from '@/AppContext';
 import styles from './landing.module.css';
 import { useRouter } from 'next/navigation';
+import { useContext, useEffect } from 'react';
+import * as fcl from '@onflow/fcl';
 
 export default function HomePage() {
   const router = useRouter();
+  const { user } = useContext(AppContext);
 
-  function handleLogin() {
-    console.log("Login in")
-    router.push('/dashboard/home');
-  }
+  useEffect(() => {
+    if (user && user.loggedIn) {
+      router.push('/dashboard/home');
+    }
+  }, [user]);
 
   return (
     <div className={`h-full overflow-x-clip`}>
@@ -20,7 +25,12 @@ export default function HomePage() {
           <div className="text-white text-2xl font-manrope font-bold">ChecKnights</div>
         </div>
 
-        <div onClick={handleLogin} className="bg-orange-custom border-2 border-solid border-orange-custom hover:bg-black hover:text-orange-custom font-bold text-manrope p-5 py-1 rounded-lg">Login</div>
+        <div
+          onClick={fcl.logIn}
+          className="bg-orange-custom border-2 border-solid border-orange-custom hover:bg-black hover:text-orange-custom font-bold text-manrope p-5 py-1 rounded-lg"
+        >
+          Login
+        </div>
       </div>
 
       {/* Here section */}
@@ -114,9 +124,7 @@ export default function HomePage() {
           </div>
         </div>
         {/* Content */}
-        <div className="max-w-xl font-space-grotesk font-[500] text-6xl text-left">
-          Decentralized Leader board
-        </div>
+        <div className="max-w-xl font-space-grotesk font-[500] text-6xl text-left">Decentralized Leader board</div>
       </section>
 
       {/* ticker */}

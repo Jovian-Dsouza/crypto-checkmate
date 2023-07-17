@@ -1,5 +1,6 @@
 import '@/styles/global.css';
 import { Manrope, Space_Grotesk, Poppins } from 'next/font/google';
+import { AppContextProvider } from '@/AppContext';
 
 export const metadata = {
   title: 'CryptoKnights',
@@ -26,13 +27,15 @@ const poppins = Poppins({
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body
-        className={`${manrope.className} ${space_grotesk.className} ${poppins.className}`}
-        suppressHydrationWarning={true}
-      >
-        {children}
-      </body>
-    </html>
+    <AppContextProvider>
+      <html lang="en">
+        <body
+          className={`${manrope.className} ${space_grotesk.className} ${poppins.className}`}
+          suppressHydrationWarning={true}
+        >
+          {children}
+        </body>
+      </html>
+    </AppContextProvider>
   );
 }
