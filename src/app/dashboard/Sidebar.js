@@ -3,10 +3,28 @@ import Link from 'next/link';
 import styles from './dashboard.module.css';
 import { useSelectedLayoutSegment } from 'next/navigation';
 import { menuList } from '@/utils/data';
+import { useContext, useEffect, useMemo } from 'react';
+import { AppContext } from '@/AppContext';
+import { useRouter } from 'next/navigation';
+import * as fcl from '@onflow/fcl';
 
 export default function Sidebar({ children }) {
   const layoutSegment = useSelectedLayoutSegment();
   const segment = `/dashboard/${layoutSegment}`;
+  const { user } = useContext(AppContext);
+  const router = useRouter();
+  const address = useMemo(() => (user.addr ? user.addr.slice(0, 10) + '...' : ''), [user]);
+
+  function handleLogout() {
+    fcl.unauthenticate();
+  }
+
+  //TODO: If not logged in redirect back to home page
+  useEffect(() => {
+    if (user && !user.loggedIn) {
+      router.push('/');
+    }
+  }, [user]);
 
   return (
     <div className="flex h-full w-full text-white overflow-y-hidden">
@@ -36,12 +54,15 @@ export default function Sidebar({ children }) {
             <div className="flex items-center space-x-2">
               <div className={`w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-red-600`}></div>
               <div className="flex flex-col space-y- font-space-grotesk">
-                <div className="text-sm text-whitesmoke ">Email</div>
-                <div className="text-xs text-ghostwhite">Address</div>
+                <div className="text-sm text-whitesmoke ">User</div>
+                <div className="text-xs text-ghostwhite">{address}</div>
               </div>
             </div>
             {/* chevron right */}
-            <div className="flex items-center justify-center rounded-full bg-lavender-100 w-7 h-7 hover:bg-slate-700">
+            <div
+              onClick={handleLogout}
+              className="flex items-center justify-center rounded-full bg-lavender-100 w-7 h-7 hover:bg-slate-700"
+            >
               <img
                 src="/icons/chevron-right.svg"
                 alt="right"

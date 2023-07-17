@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@onflow/fcl": "^1.4.1",
+    "@onflow/types": "^1.1.0",
     "ably": "^1.2.5-beta.1",
     "autoprefixer": "10.4.14",
     "chess.js": "^0.13.4",
