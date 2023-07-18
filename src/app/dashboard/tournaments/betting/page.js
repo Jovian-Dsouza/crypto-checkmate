@@ -13,21 +13,36 @@ export default function Dashboard() {
         <div className="text-xl font-300">Start your game ...</div>
         <div className="div flex flex-col md:flex-row w-full md:justify-between gap-5">
           {/* Card1 */}
-          <GameCard className={styles.card1Bg} btnName="Stake Now" cardTitle="5$ Chess Match">
+          <GameCard
+            href="http://localhost:3000/dashboard/arena/game"
+            className={styles.card1Bg}
+            btnName="Stake Now"
+            cardTitle="5$ Chess Match"
+          >
             <div className="text-center text-xs text-ghostwhite max-w-[10rem] mx-[2.5rem]">
               Very Simple Match Whoever Wins get 10$
             </div>
           </GameCard>
 
           {/* Card2 */}
-          <GameCard className={styles.card2Bg} btnName="Stake Now" cardTitle="10$ Chess Match">
+          <GameCard
+            href="http://localhost:3000/dashboard/arena/game"
+            className={styles.card2Bg}
+            btnName="Stake Now"
+            cardTitle="10$ Chess Match"
+          >
             <div className="text-center text-xs text-ghostwhite max-w-[10rem] mx-[2.5rem]">
               Each Player stake 10$, Winner Earns 20$
             </div>
           </GameCard>
 
           {/* Card3 */}
-          <GameCard className={styles.card3Bg} btnName="Stake Now" cardTitle="25$ Chess Match">
+          <GameCard
+            href="http://localhost:3000/dashboard/arena/game"
+            className={styles.card3Bg}
+            btnName="Stake Now"
+            cardTitle="25$ Chess Match"
+          >
             <div className="text-center text-xs text-ghostwhite max-w-[10rem] mx-[2.5rem]">
               Each Player stakes 25$, Winner Earns 50$
             </div>
