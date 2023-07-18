@@ -113,9 +113,9 @@ export function ChessBoard({ gameId, className }) {
     }
   }
 
-  useEffect(() => {
-    getGameHistory();
-  }, [gameChannel]);
+  // useEffect(() => {
+  //   getGameHistory();
+  // }, [gameChannel]);
 
   ////////////////////////////////////Game Logic//////////////////////////////////////////////////
   function updateGame(modify) {
