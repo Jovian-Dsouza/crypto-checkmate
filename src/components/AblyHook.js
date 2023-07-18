@@ -1,5 +1,5 @@
-import Ably from "ably/promises";
-import { useEffect } from "react";
+import { AppContext } from "@/AppContext";
+import { useContext, useEffect, useMemo } from "react";
 
 function generateRandomWalletAddress() {
   const length = 16;
@@ -15,28 +15,40 @@ function generateRandomWalletAddress() {
 }
 
 //TODO Replace with actual wallet address
-const walletAddress = generateRandomWalletAddress();
-const ably = new Ably.Realtime.Promise({
-  authUrl: "/api/createTokenRequest",
-  clientId: walletAddress,
-});
+// const walletAddress = generateRandomWalletAddress();
+// const ably = new Ably.Realtime.Promise({
+//   authUrl: "/api/createTokenRequest",
+//   clientId: walletAddress,
+// });
 
 export function useChannel(gameId, callbackOnMessage) {
-  const gameChannel = ably.channels.get(`gametest:${gameId}`);
-  const chatChannel = ably.channels.get(`chat:${gameId}`);
+  const {ably} = useContext(AppContext);
+  const gameChannel = useMemo(()=>{
+    if(ably){
+      return ably.channels.get(`gametest:${gameId}`);
+    }
+  }, [ably]);
+  
+  const chatChannel = useMemo(() => {
+    if (ably) {
+      return ably.channels.get(`chat:${gameId}`);
+    }
+  }, [ably]);
+  // const gameChannel = ably.channels.get(`gametest:${gameId}`);
+  // const chatChannel = ably.channels.get(`chat:${gameId}`);
 
   const onMount = () => {
-    gameChannel.subscribe((msg) => {
-      callbackOnMessage(msg);
-    });
-    chatChannel.subscribe((msg) => {
-      callbackOnMessage(msg);
-    });
+    if(gameChannel){
+      gameChannel.subscribe((msg) => {
+        callbackOnMessage(msg);
+      });
+    }
   };
 
   const onUnmount = () => {
-    gameChannel.unsubscribe();
-    chatChannel.unsubscribe();
+    if(gameChannel){
+      gameChannel.unsubscribe();
+    }
   };
 
   useEffect(() => {
@@ -44,7 +56,7 @@ export function useChannel(gameId, callbackOnMessage) {
     return () => {
       onUnmount();
     };
-  });
+  }, [gameChannel]);
 
   return [gameChannel, chatChannel, ably];
 }

@@ -19,13 +19,6 @@ export default function Sidebar({ children }) {
     fcl.unauthenticate();
   }
 
-  //TODO: If not logged in redirect back to home page
-  useEffect(() => {
-    if (user && !user.loggedIn) {
-      router.push('/');
-    }
-  }, [user]);
-
   return (
     <div className="flex h-full w-full text-white overflow-y-hidden">
       {/* Side Nav bar */}
@@ -35,7 +28,7 @@ export default function Sidebar({ children }) {
           {menuList.map((item, index) => (
             <Link
               className={`flex items-center py-3 px-5 gap-2 rounded-xl text-black no-underline ${
-                segment === item.link ? styles.menuGradientSelected : styles.menuGradient
+                item.link.includes(segment) ? styles.menuGradientSelected : styles.menuGradient
               }`}
               key={index}
               href={item.link}
