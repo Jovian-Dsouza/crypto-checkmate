@@ -47,68 +47,70 @@ export function ChessBoard({ gameId, className }) {
   }
 
   function getGameHistory() {
-    gameChannel.history({ direction: 'forwards' }, (err, result) => {
-      if (!result || result.items.length == 0) {
-        return;
-      }
-      console.log('Replaying moves', result.items.length);
+    if(gameChannel){
+      gameChannel.history({ direction: 'forwards' }, (err, result) => {
+        if (!result || result.items.length == 0) {
+          return;
+        }
+        console.log('Replaying moves', result.items.length);
 
-      // Calculate initial times based on history
-      let player1Time = DURATION;
-      let player2Time = DURATION;
-      let currentPlayer = 'white';
-      for (const item of result.items) {
-        const { clientId, data: move, timestamp } = item;
+        // Calculate initial times based on history
+        let player1Time = DURATION;
+        let player2Time = DURATION;
+        let currentPlayer = 'white';
+        for (const item of result.items) {
+          const { clientId, data: move, timestamp } = item;
 
-        // Calculate time spent for each move
-        const timeSpent = Math.floor((timestamp - result.items[0].timestamp) / 1000);
+          // Calculate time spent for each move
+          const timeSpent = Math.floor((timestamp - result.items[0].timestamp) / 1000);
 
-        // Subtract time spent from the corresponding player's initial time
-        if (currentPlayer === 'white') {
-          player1Time -= timeSpent;
+          // Subtract time spent from the corresponding player's initial time
+          if (currentPlayer === 'white') {
+            player1Time -= timeSpent;
+          } else {
+            player2Time -= timeSpent;
+          }
+
+          // Switch the current player for the next move
+          currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+        }
+
+        setPlayer1Time(player1Time);
+        setPlayer2Time(player2Time);
+
+        // Check for the last occurrence of 'game_over' move
+        let lastGameOverIndex = -1;
+        for (let i = result.items.length - 1; i >= 0; i--) {
+          if (result.items[i].data.type === 'game_over') {
+            lastGameOverIndex = i;
+            break;
+          }
+        }
+
+        //Load game from history
+        updateGame((game) => {
+          for (let i = lastGameOverIndex+1; i < result.items.length; i++) {
+            console.log('from history', result.items[i].data);
+            const { from, to, promotion } = result.items[i].data;
+
+            game.move({
+              from: from,
+              to: to,
+              promotion: promotion,
+            });
+          }
+        });
+
+        //Cal my Color from history
+        // console.log('My client id', ably.options.clientId);
+        // console.log('first move client Id', result.items[0].clientId);
+        if (result.items[0].clientId === ably.options.clientId) {
+          setMyColor('white');
         } else {
-          player2Time -= timeSpent;
-        }
-
-        // Switch the current player for the next move
-        currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
-      }
-
-      setPlayer1Time(player1Time);
-      setPlayer2Time(player2Time);
-
-      // Check for the last occurrence of 'game_over' move
-      let lastGameOverIndex = -1;
-      for (let i = result.items.length - 1; i >= 0; i--) {
-        if (result.items[i].data.type === 'game_over') {
-          lastGameOverIndex = i;
-          break;
-        }
-      }
-
-      //Load game from history
-      updateGame((game) => {
-        for (let i = lastGameOverIndex+1; i < result.items.length; i++) {
-          console.log('from history', result.items[i].data);
-          const { from, to, promotion } = result.items[i].data;
-
-          game.move({
-            from: from,
-            to: to,
-            promotion: promotion,
-          });
+          setMyColor('black');
         }
       });
-
-      //Cal my Color from history
-      // console.log('My client id', ably.options.clientId);
-      // console.log('first move client Id', result.items[0].clientId);
-      if (result.items[0].clientId === ably.options.clientId) {
-        setMyColor('white');
-      } else {
-        setMyColor('black');
-      }
-    });
+    }
   }
 
   useEffect(() => {

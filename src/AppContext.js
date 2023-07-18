@@ -1,7 +1,9 @@
 'use client';
 
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect, useMemo } from 'react';
 import * as fcl from '@onflow/fcl';
+import Ably from 'ably/promises';
+
 
 fcl
   .config()
@@ -15,7 +17,16 @@ export const AppContext = createContext();
 
 export function AppContextProvider({ children }) {
   const [user, setUser] = useState({ loggedIn: null });
+  const ably = useMemo(()=>{
+    if(user && user.loggedIn){
+      return new Ably.Realtime.Promise({
+        authUrl: '/api/createTokenRequest',
+        clientId: user.addr,
+      });
+    }
+  }, [user])
+
   useEffect(() => fcl.currentUser.subscribe(setUser), []); // sets the callback for FCL to use
 
-  return <AppContext.Provider value={{ user }}>{children}</AppContext.Provider>;
+  return <AppContext.Provider value={{ user, ably }}>{children}</AppContext.Provider>;
 }
