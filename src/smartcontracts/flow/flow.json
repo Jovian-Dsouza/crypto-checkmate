@@ -1,0 +1,47 @@
+{
+	"contracts": {
+		"ChessKnights": "../contracts/ChessKnights.cdc",
+		"ChessOracleElo": "../contracts/ChessOracleElo.cdc"
+	},
+	"networks": {
+		"emulator": "127.0.0.1:3569",
+		"mainnet": "access.mainnet.nodes.onflow.org:9000",
+		"sandboxnet": "access.sandboxnet.nodes.onflow.org:9000",
+		"testnet": "access.devnet.nodes.onflow.org:9000"
+	},
+	"accounts": {
+		"acc": {
+			"address": "4881ba8085db9103",
+			"key": {
+				"type": "file",
+				"location": "acc.pkey"
+			}
+		},
+		"acc2": {
+			"address": "d8b8431369792286",
+			"key": {
+				"type": "file",
+				"location": "acc2.pkey"
+			}
+		},
+		"acc3": {
+			"address": "cf896073c9eb1241",
+			"key": {
+				"type": "file",
+				"location": "acc3.pkey"
+			}
+		},
+		"emulator-account": {
+			"address": "f8d6e0586b0a20c7",
+			"key": "0445c99d8d7740b972f20e150deaa299c46eb247550000daab8e3b092143c4bc"
+		}
+	},
+	"deployments": {
+		"testnet": {
+			"acc3": [
+				"ChessOracleElo",
+				"ChessKnights"
+			]
+		}
+	}
+}
