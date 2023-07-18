@@ -13,21 +13,36 @@ export default function Dashboard() {
         <div className="text-xl font-300">Start your game ...</div>
         <div className="div flex flex-col md:flex-row w-full md:justify-between gap-5">
           {/* Card1 */}
-          <GameCard className={styles.card1Bg} btnName="Play Now" cardTitle="Standard Match">
+          <GameCard
+            className={styles.card1Bg}
+            btnName="Play Now"
+            cardTitle="Standard Match"
+            href="http://localhost:3000/dashboard/arena/game"
+          >
             <div className="text-center text-xs text-ghostwhite max-w-[15rem]">
               This Combat match is between your beloved friends or Random mates
             </div>
           </GameCard>
 
           {/* Card2 */}
-          <GameCard className={styles.card2Bg} btnName="Play Now" cardTitle="Betting Match">
+          <GameCard
+            href="http://localhost:3000/dashboard/tournaments/betting"
+            className={styles.card2Bg}
+            btnName="Play Now"
+            cardTitle="Betting Match"
+          >
             <div className="text-center text-xs text-ghostwhite max-w-[15rem]">
               Stake Flow and Bet with your friends , Random mates for Ultimate winnings
             </div>
           </GameCard>
 
           {/* Card3 */}
-          <GameCard className={styles.card3Bg} btnName="Play Now" cardTitle="You Vs Ai">
+          <GameCard
+            href="http://localhost:3000/dashboard/arena/"
+            className={styles.card3Bg}
+            btnName="Play Now"
+            cardTitle="You Vs Ai"
+          >
             <div className="text-center text-xs text-ghostwhite max-w-[15rem]">
               This game is for your practice and have no affect on Your Ratings.
             </div>
@@ -41,7 +56,7 @@ export default function Dashboard() {
           {/* Rating Card */}
           <div className="flex flex-col border border-solid border-lightsteelblue py-2 bg-lavender-300 rounded-xl">
             <div className="flex items-center space-x-1 px-3">
-              <img src="/icons/activity.svg"  />
+              <img src="/icons/activity.svg" />
               <div className="text-sm font-500">Rating</div>
             </div>
             <div className="flex items-center justify-center text-5xl font-bold px-10 py-10">1200</div>
@@ -50,7 +65,7 @@ export default function Dashboard() {
           {/* Rewards Card */}
           <div className="flex flex-col border border-solid border-lightsteelblue py-2 bg-lavender-300 rounded-xl">
             <div className="flex items-center space-x-1 px-3">
-              <img src="/icons/activity.svg"  />
+              <img src="/icons/activity.svg" />
               <div className="text-sm font-500">Rewards</div>
             </div>
             <div className="flex items-center justify-center text-5xl font-bold px-10 py-10">$150</div>
@@ -58,7 +73,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className='absolute bottom-0 right-0 hidden xl:block'>
+      <div className="absolute bottom-0 right-0 hidden xl:block">
         <img src="/imgs/spiral.png" className="w-80 " />
       </div>
     </div>
