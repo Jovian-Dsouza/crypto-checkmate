@@ -1,6 +1,6 @@
 import { Chessboard, Square } from 'react-chessboard';
 import { Chess } from 'chess.js';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useChannel } from '@/components/AblyHook';
 import { GameModal } from '@/components/GameModal';
 
@@ -16,6 +16,7 @@ export function ChessBoard({ gameId, className }) {
   const [moveSquares, setMoveSquares] = useState({});
   const [optionSquares, setOptionSquares] = useState({});
   const [myColor, setMyColor] = useState('white');
+  const oppColor = useMemo(()=>(myColor==='white'? "black": "white"), [myColor])
   const [showWaiting, setShowWaiting] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
   const [winner, setWinner] = useState('');
@@ -260,8 +261,8 @@ export function ChessBoard({ gameId, className }) {
 
   /////////////////////////////Timer/////////////////////////
   // Timer Use effect
+  let timer;
   useEffect(() => {
-    let timer;
     if (activePlayer === 'white') {
       timer = setInterval(() => {
         setPlayer1Time((prevTime) => {
@@ -304,7 +305,6 @@ export function ChessBoard({ gameId, className }) {
 
     // Check if the game is over due to checkmate or stalemate
     if (game.in_checkmate() || game.in_stalemate()) {
-      setIsGameOver(true);
       let winnerTmp = '';
       if (game.in_checkmate()) {
         winnerTmp = game.turn() === 'w' ? 'black' : 'white';
@@ -315,60 +315,82 @@ export function ChessBoard({ gameId, className }) {
         type: 'game_over',
         winner: winnerTmp, // 'white', 'black', or null
       });
+      setIsGameOver(true);
       return;
     }
 
     return () => clearInterval(timer);
   }, [activePlayer]);
 
-  return (
-    <div className={className}>
-      <div className="flex flex-col w-full justify-center items-center gap-5">
-        <GameModal
-          show={showWaiting}
-          heading="Waiting..."
-          status="Waiting for Opponent"
-          btnText="Cancel match"
-        ></GameModal>
-        <GameModal
-          show={isGameOver}
-          heading="Game Over"
-          status={
-            winner === 'white' ? '🏆🎉 White Wins 🎉🏆' : winner === 'black' ? '🏆🎉 Black Wins 🎉🏆' : 'Stalemate'
-          }
-          btnText="Play Again"
-          btnStyle={`bg-[#FFAE02] hover:bg-[#b9820d] `}
-        />
+  function handleQuit(){
+    clearInterval(timer);
+    setWinner(oppColor);
+    sendMove({
+      type: 'game_over',
+      winner: oppColor, // 'white', 'black', or null
+    });
+    setIsGameOver(true);
+  }
 
-        <PlayerClock
-          player="Opponent"
-          address="0x23232..."
-          totalSeconds={myColor === 'white' ? player2Time : player1Time}
-        />
-        <Chessboard
-          id="ChessBoard"
-          animationDuration={200}
-          arePiecesDraggable={false}
-          position={game.fen()}
-          onSquareClick={onSquareClick}
-          onSquareRightClick={onSquareRightClick}
-          onPromotionPieceSelect={onPromotionPieceSelect}
-          customSquareStyles={{
-            ...moveSquares,
-            ...optionSquares,
-            ...rightClickedSquares,
-          }}
-          promotionToSquare={moveTo}
-          showPromotionDialog={showPromotionDialog}
-          customBoardStyle={{
-            borderRadius: '4px',
-            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
-          }}
-          customDarkSquareStyle={{ backgroundColor: '#B58863' }}
-          customLightSquareStyle={{ backgroundColor: '#F0D9B5' }}
-          boardOrientation={myColor}
-        />
-        <PlayerClock player="Me" address="0x23232..." totalSeconds={myColor === 'white' ? player1Time : player2Time} />
+  return (
+    <div className="flex flex-col items-center justify-start w-full p-1">
+      <div className="flex w-full justify-end mr-10 mt-2">
+        <div onClick={handleQuit} className="py-2 px-5 mb-3 rounded-xl bg-[#B70000] hover:scale-105 hover:bg-[#ee4040] transition-all">
+          Quit Game
+        </div>
+      </div>
+      <div className={className}>
+        <div className="flex flex-col w-full justify-center items-center gap-5">
+          <GameModal
+            show={showWaiting}
+            heading="Waiting..."
+            status="Waiting for Opponent"
+            btnText="Cancel match"
+          ></GameModal>
+          <GameModal
+            show={isGameOver}
+            heading="Game Over"
+            status={
+              winner === 'white' ? '🏆🎉 White Wins 🎉🏆' : winner === 'black' ? '🏆🎉 Black Wins 🎉🏆' : 'Stalemate'
+            }
+            btnText="Play Again"
+            btnStyle={`bg-[#FFAE02] hover:bg-[#b9820d] `}
+          />
+
+          <PlayerClock
+            player="Opponent"
+            address="0x23232..."
+            totalSeconds={myColor === 'white' ? player2Time : player1Time}
+          />
+          <Chessboard
+            id="ChessBoard"
+            animationDuration={200}
+            arePiecesDraggable={false}
+            position={game.fen()}
+            onSquareClick={onSquareClick}
+            onSquareRightClick={onSquareRightClick}
+            onPromotionPieceSelect={onPromotionPieceSelect}
+            customSquareStyles={{
+              ...moveSquares,
+              ...optionSquares,
+              ...rightClickedSquares,
+            }}
+            promotionToSquare={moveTo}
+            showPromotionDialog={showPromotionDialog}
+            customBoardStyle={{
+              borderRadius: '4px',
+              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
+            }}
+            customDarkSquareStyle={{ backgroundColor: '#B58863' }}
+            customLightSquareStyle={{ backgroundColor: '#F0D9B5' }}
+            boardOrientation={myColor}
+          />
+          <PlayerClock
+            player="Me"
+            address="0x23232..."
+            totalSeconds={myColor === 'white' ? player1Time : player2Time}
+          />
+        </div>
       </div>
     </div>
   );
