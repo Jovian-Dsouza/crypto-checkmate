@@ -17,7 +17,7 @@ export default function Dashboard() {
             className={styles.card1Bg}
             btnName="Play Now"
             cardTitle="Standard Match"
-            href="http://localhost:3000/dashboard/arena/game"
+            href="/dashboard/arena/standard"
           >
             <div className="text-center text-xs text-ghostwhite max-w-[15rem]">
               This Combat match is between your beloved friends or Random mates
@@ -26,7 +26,7 @@ export default function Dashboard() {
 
           {/* Card2 */}
           <GameCard
-            href="http://localhost:3000/dashboard/tournaments/betting"
+            href="/dashboard/tournaments/betting"
             className={styles.card2Bg}
             btnName="Play Now"
             cardTitle="Betting Match"
@@ -38,7 +38,7 @@ export default function Dashboard() {
 
           {/* Card3 */}
           <GameCard
-            href="http://localhost:3000/dashboard/arena/"
+            href="/dashboard/arena/"
             className={styles.card3Bg}
             btnName="Play Now"
             cardTitle="You Vs Ai"

@@ -4,7 +4,20 @@ import { useContext, useRef, useState } from 'react';
 import { AppContext } from '@/AppContext';
 import { useRouter } from 'next/navigation';
 
-export default function GamePanel({ children }) {
+function generateRandomGameUUID() {
+  const length = 8;
+  const characters = '0123456789ABCDEF';
+  let result = '';
+
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters.charAt(randomIndex);
+  }
+
+  return result;
+}
+
+export default function GamePanel({ children, gameType }) {
   const flowchess = new useFlowChess();
   const { user } = useContext(AppContext);
   const router = useRouter();
@@ -12,10 +25,18 @@ export default function GamePanel({ children }) {
   const [gameId, setGameId] = useState('');
 
   async function handleMatchMaking() {
-    const res = await flowchess.transactionEnterMacthMaking(user.addr);
-    console.log('Game uuid: ', res.uuid);
-    setGameId(res.uuid)
-    router.push(`/dashboard/arena/game/${res.uuid}`);
+    let gameUuid = '';
+    if(gameType === "standard"){
+      gameUuid = generateRandomGameUUID();
+    }
+    else{
+      const res = await flowchess.transactionEnterMacthMaking(user.addr);
+      gameUuid = res.uuid
+    }
+    
+    console.log('Game uuid: ', gameUuid);
+    setGameId(gameUuid)
+    router.push(`/dashboard/arena/${gameType}/${gameUuid}`);
   }
 
   async function handleJoin() {
