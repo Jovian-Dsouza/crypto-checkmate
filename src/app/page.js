@@ -9,11 +9,14 @@ export default function HomePage() {
   const router = useRouter();
   const { user } = useContext(AppContext);
 
-  useEffect(() => {
+  function handleLoginDashboard(){
     if (user && user.loggedIn) {
       router.push('/dashboard/home');
     }
-  }, [user]);
+    else {
+      fcl.logIn()
+    }
+  }
 
   return (
     <div className={`h-full overflow-x-clip`}>
@@ -26,10 +29,10 @@ export default function HomePage() {
         </div>
 
         <div
-          onClick={fcl.logIn}
+          onClick={handleLoginDashboard}
           className="bg-orange-custom border-2 border-solid border-orange-custom hover:bg-black hover:text-orange-custom font-bold text-manrope p-5 py-1 rounded-lg"
         >
-          Login
+          {user && user.loggedIn ? 'Dashboard' : 'Login'}
         </div>
       </div>
 
