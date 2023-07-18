@@ -235,7 +235,6 @@ export function ChessBoard({ gameId, className, myAddr }) {
   }, [activePlayer]);
 
   function handleQuit() {
-    clearInterval(timer);
     setWinner(oppColor);
     sendMove({
       type: 'game_over',
