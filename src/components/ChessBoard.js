@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useChannel } from '@/components/AblyHook';
 import { GameModal } from '@/components/GameModal';
 
-export function ChessBoard({ gameId, className }) {
+export function ChessBoard({ gameId, className, myAddr }) {
   const DURATION = 600; //10mins Game time
 
   const [gameChannel, chatChannel, ably] = useChannel(gameId, onMoveReceived);
@@ -16,7 +16,7 @@ export function ChessBoard({ gameId, className }) {
   const [moveSquares, setMoveSquares] = useState({});
   const [optionSquares, setOptionSquares] = useState({});
   const [myColor, setMyColor] = useState('white');
-  const oppColor = useMemo(()=>(myColor==='white'? "black": "white"), [myColor])
+  const oppColor = useMemo(() => (myColor === 'white' ? 'black' : 'white'), [myColor]);
   const [showWaiting, setShowWaiting] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
   const [winner, setWinner] = useState('');
@@ -47,7 +47,7 @@ export function ChessBoard({ gameId, className }) {
   }
 
   function getGameHistory() {
-    if(gameChannel){
+    if (gameChannel) {
       gameChannel.history({ direction: 'forwards' }, (err, result) => {
         if (!result || result.items.length == 0) {
           return;
@@ -89,7 +89,7 @@ export function ChessBoard({ gameId, className }) {
 
         //Load game from history
         updateGame((game) => {
-          for (let i = lastGameOverIndex+1; i < result.items.length; i++) {
+          for (let i = lastGameOverIndex + 1; i < result.items.length; i++) {
             console.log('from history', result.items[i].data);
             const { from, to, promotion } = result.items[i].data;
 
@@ -324,7 +324,7 @@ export function ChessBoard({ gameId, className }) {
     return () => clearInterval(timer);
   }, [activePlayer]);
 
-  function handleQuit(){
+  function handleQuit() {
     clearInterval(timer);
     setWinner(oppColor);
     sendMove({
@@ -337,7 +337,10 @@ export function ChessBoard({ gameId, className }) {
   return (
     <div className="flex flex-col items-center justify-start w-full p-1">
       <div className="flex w-full justify-end mr-10 mt-2">
-        <div onClick={handleQuit} className="py-2 px-5 mb-3 rounded-xl bg-[#B70000] hover:scale-105 hover:bg-[#ee4040] transition-all">
+        <div
+          onClick={handleQuit}
+          className="py-2 px-5 mb-3 rounded-xl bg-[#B70000] hover:scale-105 hover:bg-[#ee4040] transition-all"
+        >
           Quit Game
         </div>
       </div>
@@ -361,7 +364,7 @@ export function ChessBoard({ gameId, className }) {
 
           <PlayerClock
             player="Opponent"
-            address="0x23232..."
+            address="Anonymous"
             totalSeconds={myColor === 'white' ? player2Time : player1Time}
           />
           <Chessboard
@@ -387,11 +390,7 @@ export function ChessBoard({ gameId, className }) {
             customLightSquareStyle={{ backgroundColor: '#F0D9B5' }}
             boardOrientation={myColor}
           />
-          <PlayerClock
-            player="Me"
-            address="0x23232..."
-            totalSeconds={myColor === 'white' ? player1Time : player2Time}
-          />
+          <PlayerClock player="Me" address={myAddr} totalSeconds={myColor === 'white' ? player1Time : player2Time} />
         </div>
       </div>
     </div>

@@ -14,7 +14,7 @@ export default function Dashboard() {
         <div className="div flex flex-col md:flex-row w-full md:justify-between gap-5">
           {/* Card1 */}
           <GameCard
-            href="http://localhost:3000/dashboard/arena/game"
+            href="/dashboard/arena/betting"
             className={styles.card1Bg}
             btnName="Stake Now"
             cardTitle="5$ Chess Match"
@@ -26,7 +26,7 @@ export default function Dashboard() {
 
           {/* Card2 */}
           <GameCard
-            href="http://localhost:3000/dashboard/arena/game"
+            href="/dashboard/arena/betting"
             className={styles.card2Bg}
             btnName="Stake Now"
             cardTitle="10$ Chess Match"
@@ -38,7 +38,7 @@ export default function Dashboard() {
 
           {/* Card3 */}
           <GameCard
-            href="http://localhost:3000/dashboard/arena/game"
+            href="/dashboard/arena/betting"
             className={styles.card3Bg}
             btnName="Stake Now"
             cardTitle="25$ Chess Match"
