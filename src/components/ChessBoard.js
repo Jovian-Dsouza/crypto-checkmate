@@ -17,9 +17,9 @@ export function ChessBoard({ gameId, className, myAddr }) {
   const [optionSquares, setOptionSquares] = useState({});
   const [myColor, setMyColor] = useState('white');
   const oppColor = useMemo(() => (myColor === 'white' ? 'black' : 'white'), [myColor]);
-  const [showWaiting, setShowWaiting] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
   const [winner, setWinner] = useState('');
+  const [isGameStarted, setIsGameStarted] = useState(false);
   //timer
   const [player1Time, setPlayer1Time] = useState(DURATION);
   const [player2Time, setPlayer2Time] = useState(DURATION);
@@ -31,13 +31,22 @@ export function ChessBoard({ gameId, className, myAddr }) {
     if (message.type === 'game_over') {
       setIsGameOver(true);
       setWinner(message.winner);
+    } else if (message.type === 'start_game') {
+      const color = message.oppColor;
+      if (myColor !== color) {
+        setMyColor(color);
+      }
     } else {
       // Regular move received
       const { clientId, data: move, timestamp } = message;
-      console.log('Move received', move);
-      updateGame((newGame) => {
-        newGame.move(move);
-      });
+
+      if (myAddr !== clientId) {
+        console.log('Move received', move);
+        updateGame((newGame) => {
+          newGame.move(move);
+        });
+        setActivePlayer((prevActivePlayer) => (prevActivePlayer === 'white' ? 'black' : 'white'));
+      }
     }
   }
 
@@ -46,6 +55,7 @@ export function ChessBoard({ gameId, className, myAddr }) {
     gameChannel.publish({ name: 'game', data: message });
   }
 
+  //TODO Fix Game history when refreshed
   function getGameHistory() {
     if (gameChannel) {
       gameChannel.history({ direction: 'forwards' }, (err, result) => {
@@ -59,6 +69,12 @@ export function ChessBoard({ gameId, className, myAddr }) {
         let player2Time = DURATION;
         let currentPlayer = 'white';
         for (const item of result.items) {
+          if (item.type === 'game_over') {
+            setIsGameOver(true);
+            setWinner(item.winner);
+            break;
+          }
+
           const { clientId, data: move, timestamp } = item;
 
           // Calculate time spent for each move
@@ -100,15 +116,6 @@ export function ChessBoard({ gameId, className, myAddr }) {
             });
           }
         });
-
-        //Cal my Color from history
-        // console.log('My client id', ably.options.clientId);
-        // console.log('first move client Id', result.items[0].clientId);
-        if (result.items[0].clientId === ably.options.clientId) {
-          setMyColor('white');
-        } else {
-          setMyColor('black');
-        }
       });
     }
   }
@@ -116,6 +123,41 @@ export function ChessBoard({ gameId, className, myAddr }) {
   // useEffect(() => {
   //   getGameHistory();
   // }, [gameChannel]);
+
+  useEffect(() => {
+    if (gameChannel && (gameId !== 'standard' || gameId != 'betting')) {
+      // Get the presence information for the game channel
+      gameChannel.presence.get((err, members) => {
+        if (err) {
+          console.error('Error getting presence information:', err);
+          return;
+        }
+
+        console.log('Number of players: ', members.length);
+        for (let i = 0; i < members.length; i++) {
+          console.log(`Player ${i} = ` + members[i].clientId);
+
+          if (members[i].clientId !== myAddr) {
+            setIsGameStarted(true);
+            setMyColor('black');
+          }
+        }
+      });
+
+      gameChannel.presence.enter(myAddr, function (err) {});
+
+      gameChannel.presence.subscribe('enter', function (member) {
+        if (member.clientId !== myAddr) {
+          setIsGameStarted(true);
+        }
+      });
+
+      //TODO Pause the match when the player leaves
+      // gameChannel.presence.subscribe('leave', function (member) {
+      //   console.log('member left', member.data); // => not moving
+      // });
+    }
+  }, [gameChannel]);
 
   ////////////////////////////////////Game Logic//////////////////////////////////////////////////
   function updateGame(modify) {
@@ -265,6 +307,9 @@ export function ChessBoard({ gameId, className, myAddr }) {
   // Timer Use effect
   let timer;
   useEffect(() => {
+    if (!isGameStarted) {
+      return;
+    }
     if (activePlayer === 'white') {
       timer = setInterval(() => {
         setPlayer1Time((prevTime) => {
@@ -322,7 +367,7 @@ export function ChessBoard({ gameId, className, myAddr }) {
     }
 
     return () => clearInterval(timer);
-  }, [activePlayer]);
+  }, [activePlayer, isGameStarted]);
 
   function handleQuit() {
     clearInterval(timer);
@@ -347,7 +392,7 @@ export function ChessBoard({ gameId, className, myAddr }) {
       <div className={className}>
         <div className="flex flex-col w-full justify-center items-center gap-5">
           <GameModal
-            show={showWaiting}
+            show={!isGameStarted}
             heading="Waiting..."
             status="Waiting for Opponent"
             btnText="Cancel match"
