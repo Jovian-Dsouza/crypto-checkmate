@@ -2,7 +2,7 @@
 import useFlowChess from '@/components/useFlowChess';
 import { useContext, useRef, useState } from 'react';
 import { AppContext } from '@/AppContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSelectedLayoutSegment } from 'next/navigation';
 
 function generateRandomGameUUID() {
   const length = 8;
@@ -18,11 +18,12 @@ function generateRandomGameUUID() {
 }
 
 export default function GamePanel({ children, gameType }) {
+  const layoutSegment = useSelectedLayoutSegment();
   const flowchess = new useFlowChess();
   const { user } = useContext(AppContext);
   const router = useRouter();
   const playerCodeRef = useRef('');
-  const [gameId, setGameId] = useState('');
+  const [gameId, setGameId] = useState(layoutSegment);
 
   async function handleMatchMaking() {
     let gameUuid = '';
